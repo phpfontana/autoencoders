@@ -1,8 +1,7 @@
-import torch
-import torch.nn as nn
 from torch import Tensor
+from ..base import BaseModel
 
-class VAE(nn.Module):
+class VAE(BaseModel):
     def __init__(self):
         super(VAE, self).__init__()
 

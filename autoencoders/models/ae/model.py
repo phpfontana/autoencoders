@@ -1,23 +1,21 @@
 import torch.nn as nn
 from torch import Tensor
+from ..base import BaseModel
 
-class AutoEncoder(nn.Module):
-    def __init__(self, input_dim: int, latent_dim: int):
-        super(AutoEncoder, self).__init__()
+class AE(BaseModel):
+    def __init__(self, latent_dim, hidden_dim):
+        super(AE, self).__init__()
+
         self.encoder = nn.Sequential(
-            nn.Linear(input_dim, 128),
+            nn.Linear(784, hidden_dim),
             nn.ReLU(),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Linear(64, latent_dim)
+            nn.Linear(hidden_dim, latent_dim)
         )
 
         self.decoder = nn.Sequential(
-            nn.Linear(latent_dim, 64),
+            nn.Linear(latent_dim, hidden_dim),
             nn.ReLU(),
-            nn.Linear(64, 128),
-            nn.ReLU(),
-            nn.Linear(128, input_dim),
+            nn.Linear(hidden_dim, 784),
             nn.Sigmoid()
         )
 
@@ -31,10 +29,3 @@ class AutoEncoder(nn.Module):
         z = self.encode(x)
         x_hat = self.decode(z)
         return x_hat
-    
-def main():
-    model = AutoEncoder(784, 64)
-    print(model)
-
-if __name__ == "__main__":
-    main()

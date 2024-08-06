@@ -1,2 +1,2 @@
-from .models.ae.model import AutoEncoder
+from .models.ae.model import AE
 from .models.vae.model import VAE
