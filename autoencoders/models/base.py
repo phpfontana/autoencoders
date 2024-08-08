@@ -12,6 +12,4 @@ class BaseModel(nn.Module):
         raise NotImplementedError
     
     def forward(self, x: Tensor) -> Tensor:
-        z = self.encode(x)
-        x_recon = self.decode(z)
-        return x_recon
+        raise NotImplementedError
