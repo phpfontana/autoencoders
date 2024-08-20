@@ -1,2 +1,4 @@
 from .models.ae.model import AE
-from .models.vae.model import VAE
+
+from .trainers.trainer import Trainer
+from .trainers.config import TrainerConfig

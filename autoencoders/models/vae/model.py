@@ -1,5 +1,5 @@
 from torch import Tensor
-from ..base import BaseModel
+from ..base_model import BaseModel
 
 class VAE(BaseModel):
     def __init__(self):

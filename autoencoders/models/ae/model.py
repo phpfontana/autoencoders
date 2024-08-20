@@ -1,70 +1,61 @@
+import torch
 import torch.nn as nn
 from torch import Tensor
-from ..base import BaseModel
+from typing import List
 
-class AE(BaseModel):
-    def __init__(self, latent_dim, hidden_dim):
+
+class AE(nn.Module):
+    def __init__(
+            self, 
+            input_dim: int,  
+            latent_dim: int, 
+            hidden_dims: List[int] = None
+    ):
         super(AE, self).__init__()
-
-        self.encoder = nn.Sequential(
-            nn.Linear(784, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, latent_dim)
-        )
-
-        self.decoder = nn.Sequential(
-            nn.Linear(latent_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, 784),
-            nn.Sigmoid()
-        )
-from ..base import BaseModel
-from typing import Tuple, Any, Union, List
-
-class AE(BaseModel):
-    def __init__(self, 
-                 input_shape: Tuple[int, int, int], # (batch_size, channels, height, width)
-                 hidden_dims: List[int], 
-                 latent_dim: int): 
-        super(AE, self).__init__()
-        self.input_shape = input_shape
-        self.hidden_dims = hidden_dims
+        self.input_dim = input_dim
         self.latent_dim = latent_dim
 
-        # Flatten input size
-        input_dim = input_shape[0] * input_shape[1] * input_shape[2]
-
-        # Encoder layers
+        # Encoder
         encoder_layers = []
-        for h_dim in hidden_dims:
-            encoder_layers.append(nn.Linear(input_dim, h_dim))
-            encoder_layers.append(nn.ReLU())
-            input_dim = h_dim
-        encoder_layers.append(nn.Linear(input_dim, latent_dim))
+        encoder_layers.append(nn.Linear(input_dim, hidden_dims[0]))
+        encoder_layers.append(nn.SiLU())
+        for i in range(1, len(hidden_dims)):
+            encoder_layers.append(nn.Linear(hidden_dims[i-1], hidden_dims[i]))
+            encoder_layers.append(nn.SiLU())
+        encoder_layers.append(nn.Linear(hidden_dims[-1], latent_dim))
         self.encoder = nn.Sequential(*encoder_layers)
 
-        # Decoder layers
+        # Decoder
         decoder_layers = []
-        decoder_input_dim = latent_dim
-        for h_dim in reversed(hidden_dims):
-            decoder_layers.append(nn.Linear(decoder_input_dim, h_dim))
-            decoder_layers.append(nn.ReLU())
-            decoder_input_dim = h_dim
-        decoder_layers.append(nn.Linear(decoder_input_dim, self.input_shape[0] * self.input_shape[1] * self.input_shape[2]))
-        decoder_layers.append(nn.Sigmoid())
+        decoder_layers.append(nn.Linear(latent_dim, hidden_dims[-1]))
+        decoder_layers.append(nn.SiLU())
+        for i in range(len(hidden_dims) - 1, 0, -1):
+            decoder_layers.append(nn.Linear(hidden_dims[i], hidden_dims[i-1]))
+            decoder_layers.append(nn.SiLU())
+        decoder_layers.append(nn.Linear(hidden_dims[0], input_dim))
+        decoder_layers.append(nn.Sigmoid())  
         self.decoder = nn.Sequential(*decoder_layers)
-
+    
     def encode(self, x: Tensor) -> Tensor:
-        # Flatten the input
-        x = x.view(x.size(0), -1)
         return self.encoder(x)
-
+    
     def decode(self, z: Tensor) -> Tensor:
-        x_hat = self.decoder(z)
-        # Reshape to the original input shape
-        return x_hat.view(x_hat.size(0), *self.input_shape)
-
+        return self.decoder(z)
+    
     def forward(self, x: Tensor) -> Tensor:
         z = self.encode(x)
         x_hat = self.decode(z)
         return x_hat
+    
+
+def main():
+    x = torch.randn(1, 784)
+    hidden_dims = [256, 128, 64, 32]
+    ae = AE(input_dim=784, latent_dim=16, hidden_dims=hidden_dims)
+    print(ae)
+
+    x_hat = ae(x)
+    print(x_hat.shape)
+
+if __name__ == "__main__":
+    main()
