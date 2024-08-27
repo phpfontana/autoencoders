@@ -173,7 +173,7 @@ def main():
     hidden_dims = [256, 128, 64, 32]
     
     # Instantiate Autoencoder model
-    ae = Autoencoder(input_dim=784, latent_dim=16, hidden_dims=hidden_dims)
+    ae = AE(input_dim=784, latent_dim=16, hidden_dims=hidden_dims)
     
     # Print model architecture
     print(ae)
