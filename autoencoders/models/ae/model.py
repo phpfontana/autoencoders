@@ -109,7 +109,7 @@ class Decoder(nn.Module):
         return self.decoder(z)
 
 
-class Autoencoder(nn.Module):
+class AE(nn.Module):
     """
     An Autoencoder model comprising an Encoder and a Decoder.
     """

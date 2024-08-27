@@ -1,6 +1,12 @@
 # AutoEncoders
 This repository provides a collection of autoencoder models, utilities for training and evaluation, and examples for various applications such as image reconstruction, anomaly detection, and feature extraction.
 
+## Getting Started
+Install from source
+```bash
+pip install git+https://github.com/phpfontana/autoencoders.git  
+```
+
 ```python
 import torch
 from autoencoders import Autoencoder, Trainer, TrainerConfig
