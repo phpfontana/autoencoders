@@ -6,8 +6,8 @@ setup(
     author='P. Fontana',
     description='Autoencoders models',
     url='https://github.com/phpfontana/autoencoders/tree/main',
-    packages=find_packages(where='autoencoders'),  # Finds packages inside 'autoencoders' directory
-    package_dir={'': 'autoencoders'},  # Points to the directory where packages are located
+    packages=find_packages(where='src'),  # Finds packages inside 'autoencoders' directory
+    package_dir={'': 'src'},  # Points to the directory where packages are located
     install_requires=[
         'torch==2.4.0',
         'torchaudio==2.4.0',
