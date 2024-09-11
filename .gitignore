@@ -164,3 +164,4 @@ data/
 checkpoints/
 samples/
 main.py
+tests/
