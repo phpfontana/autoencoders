@@ -15,7 +15,6 @@ class TrainerConfig:
         optimizer_config (Optional[Dict]): Additional configuration for the optimizer.
         scheduler_cls (Optional[str]): Scheduler class to use for learning rate scheduling.
         scheduler_config (Optional[Dict]): Additional configuration for the scheduler.
-        loss_fn (str): Loss function to use (e.g. BCELoss).
     """
     output_dir: Optional[str] = None
     train_batch_size: int = 64
@@ -26,4 +25,3 @@ class TrainerConfig:
     optimizer_config: Optional[Dict] = None
     scheduler_cls: Optional[str] = None
     scheduler_config: Optional[Dict] = None
-    loss_fn: str = 'BCELoss'

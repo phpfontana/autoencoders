@@ -1,2 +1,2 @@
-from .ae import AE
-from .vae import VAE
+from .ae.model import AE
+from .vae.model import VAE

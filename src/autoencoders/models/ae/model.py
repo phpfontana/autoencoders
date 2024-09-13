@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from typing import List
-from dataclasses import dataclass
+import torch.nn.functional as F
+
+from output import AEOutput
 
 
 class AE(nn.Module):
@@ -63,7 +64,7 @@ class AE(nn.Module):
         """
         return self.decoder(z)
     
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> AEOutput:
         """Performs a forward pass of the Autoencoder.
 
         Args:
@@ -73,9 +74,11 @@ class AE(nn.Module):
             torch.Tensor: Reconstructed data.
         """
         z = self.encode(x)
-        x_hat = self.decode(z)
-        x_hat = self.sigmoid(x_hat)
-        return x_hat
+        x_recon = self.sigmoid(self.decode(z))
+
+        loss = F.binary_cross_entropy(x_recon, x, reduction='mean')
+    
+        return AEOutput(z=z, x_recon=x_recon, loss=loss)
 
 
 def main():
@@ -83,8 +86,9 @@ def main():
     print(model)
 
     x = torch.randn(1, 784)
+    x = (x - x.min()) / (x.max() - x.min())  
     out = model(x)
-    print(out.shape)
+    print(out.x_recon.shape)
 
 if __name__ == "__main__":
     main()

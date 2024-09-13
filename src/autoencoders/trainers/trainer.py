@@ -34,8 +34,6 @@ class Trainer:
         self.val_loader = torch.utils.data.DataLoader(val_data, batch_size=config.val_batch_size)
         self.device = device
 
-    
-        self.loss_fn = getattr(nn, config.loss_fn)()
         self.optimizer = getattr(torch.optim, config.optimizer_cls)(
             model.parameters(), lr=config.learning_rate, **(config.optimizer_config or {})
         )
@@ -66,8 +64,8 @@ class Trainer:
         total_loss = 0.0
         
         # Iterate over the training data
-        for step, (data, label) in enumerate(self.train_loader):
-            data, label = data.to(self.device), label.to(self.device)
+        for step, (data, _) in enumerate(self.train_loader):
+            data = data.to(self.device)
 
             # Zero the parameter gradients
             self.optimizer.zero_grad()
@@ -76,7 +74,7 @@ class Trainer:
             outputs = self.model(data)
 
             # Calculate the loss
-            loss = self.loss_fn(outputs, label)
+            loss = outputs.loss
 
             # Backward pass and optimization step
             loss.backward()
@@ -111,14 +109,14 @@ class Trainer:
 
         with torch.no_grad():
             # Iterate over the validation data
-            for data, label in self.val_loader:
-                data, label = data.to(self.device), label.to(self.device)
+            for data, _ in self.val_loader:
+                data = data.to(self.device)
 
                 # Forward pass
                 output = self.model(data)
 
                 # Calculate loss
-                loss = self.loss_fn(output, label)
+                loss = output.loss
                 total_loss += loss.item()
 
         # Calculate average validation loss
