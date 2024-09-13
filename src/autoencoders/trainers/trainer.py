@@ -151,9 +151,11 @@ class Trainer:
             # Evaluate on the validation data
             val_loss = self._evaluate()
 
-            # Update the learning rate scheduler, if used
-            if self.scheduler:
-                self.scheduler.step()
+            if isinstance(self.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                self.scheduler.step(val_loss)
+            else:
+                if self.scheduler:
+                    self.scheduler.step()
 
             print(f"Epoch {epoch+1}/{self.config.num_epochs} - loss: {train_loss:.4f} - val_loss: {val_loss:.4f}")
 

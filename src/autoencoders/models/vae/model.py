@@ -2,7 +2,7 @@ from typing import List
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-from output import VAEOutput
+from .output import VAEOutput
 
 
 class VAE(nn.Module):
@@ -34,11 +34,15 @@ class VAE(nn.Module):
             nn.Sequential: Sequential container of layers.
         """
         layers = []
-        
-        for dim in hidden_dims:
+
+        # Add layers with activation functions
+        for dim in hidden_dims[:-1]:
             layers.append(nn.Linear(input_dim, dim))
-            layers.append(nn.SiLU())  
+            layers.append(nn.SiLU())
             input_dim = dim
+
+        # Add the final linear layer without activation
+        layers.append(nn.Linear(input_dim, hidden_dims[-1]))
 
         return nn.Sequential(*layers)
     

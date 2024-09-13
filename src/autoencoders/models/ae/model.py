@@ -3,7 +3,7 @@ import torch.nn as nn
 from typing import List
 import torch.nn.functional as F
 
-from output import AEOutput
+from .output import AEOutput
 
 
 class AE(nn.Module):
@@ -34,13 +34,18 @@ class AE(nn.Module):
             nn.Sequential: Sequential container of layers.
         """
         layers = []
-        
-        for dim in hidden_dims:
+
+        # Add layers with activation functions
+        for dim in hidden_dims[:-1]:
             layers.append(nn.Linear(input_dim, dim))
-            layers.append(nn.SiLU())  
+            layers.append(nn.SiLU())
             input_dim = dim
 
+        # Add the final linear layer without activation
+        layers.append(nn.Linear(input_dim, hidden_dims[-1]))
+
         return nn.Sequential(*layers)
+
     
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """Encodes the input data into the latent space.
@@ -76,10 +81,9 @@ class AE(nn.Module):
         z = self.encode(x)
         x_recon = self.sigmoid(self.decode(z))
 
-        loss = F.binary_cross_entropy(x_recon, x, reduction='mean')
+        loss = F.binary_cross_entropy(x_recon, x, reduction='none').sum(-1).mean()
     
         return AEOutput(z=z, x_recon=x_recon, loss=loss)
-
 
 def main():
     model = AE(784, [512, 256, 128, 64, 32], 32)
