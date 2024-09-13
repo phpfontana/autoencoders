@@ -9,13 +9,14 @@ pip install git+https://github.com/phpfontana/autoencoders.git
 
 ```python
 import torch
-from autoencoders import Autoencoder, Trainer, TrainerConfig
+from autoencoders.models import AE
+from autoencoders.trainers import Trainer, TrainerConfig
 
 # Define the autoencoder model
-model = Autoencoder(
+model = AE(
     input_dim=784,              # Input dimension (e.g., 28x28 images)
+    hidden_dims=[512, 256, 128, 64, 32],  # Hidden layers dimensions
     latent_dim=32,              # Dimensionality of the latent space
-    hidden_dims=[512, 256, 128, 64, 32]  # Hidden layers dimensions
 )
 
 # Configuration for training
@@ -30,7 +31,6 @@ config = TrainerConfig(
     optimizer_config={'weight_decay': 0.01},  # Optimizer configuration
     scheduler_cls=None,             # Learning rate scheduler class
     scheduler_config=None,          # Learning rate scheduler configuration
-    loss_fn='BCELoss',              # Loss function
 )
 
 # Select device (GPU if available, otherwise CPU)
