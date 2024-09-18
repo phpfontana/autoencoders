@@ -21,8 +21,6 @@ class AE(nn.Module):
         self.encoder = self._make_layers(input_dim, hidden_dims + [latent_dim])
         self.decoder = self._make_layers(latent_dim, hidden_dims[::-1] + [input_dim])
         
-        self.sigmoid = nn.Sigmoid()
-        
     def _make_layers(self, input_dim: int, hidden_dims: List[int]) -> nn.Sequential:
         """Creates the encoder or decoder layers.
 
@@ -79,9 +77,9 @@ class AE(nn.Module):
             torch.Tensor: Reconstructed data.
         """
         z = self.encode(x)
-        x_recon = self.sigmoid(self.decode(z))
+        x_recon = self.decode(z)
 
-        loss = F.binary_cross_entropy(x_recon, x, reduction='none').sum(-1).mean()
+        loss = F.mse_loss(x_recon, x, reduction='none').sum(-1).mean()
     
         return AEOutput(z=z, x_recon=x_recon, loss=loss)
 

@@ -21,7 +21,6 @@ class VAE(nn.Module):
         self.decoder = self._make_layers(latent_dim, hidden_dims[::-1] + [input_dim])
 
         self.softplus = nn.Softplus()
-        self.sigmoid = nn.Sigmoid()
 
     def _make_layers(self, input_dim: int, hidden_dims: List[int]) -> nn.Sequential:
         """Creates the encoder or decoder layers.
@@ -95,9 +94,9 @@ class VAE(nn.Module):
         """
         dist = self.encode(x)
         z = self.reparameterize(dist)
-        x_recon = self.sigmoid(self.decode(z))
+        x_recon = self.decode(z)
     
-        loss_recon = F.binary_cross_entropy(x_recon, x, reduction='none').sum(-1).mean()
+        loss_recon = F.mse_loss(x_recon, x, reduction='none').sum(-1).mean()
 
         std_normal = torch.distributions.MultivariateNormal(
             torch.zeros_like(z, device=z.device),

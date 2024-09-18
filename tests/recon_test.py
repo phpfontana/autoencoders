@@ -15,7 +15,7 @@ def main():
     train_dataset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
     val_dataset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
-    model = VAE(input_dim=784, latent_dim=32, hidden_dims=[512, 256, 128, 64, 32])
+    model = VAE(input_dim=784, latent_dim=32, hidden_dims=[128, 64])
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
